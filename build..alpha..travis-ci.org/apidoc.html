@@ -1,0 +1,254 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/Surnet/swagger-jsdoc"
+
+    >swagger-jsdoc (v1.9.2)</a>
+</h1>
+<h4>Generates swagger doc based on JSDoc</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.swagger-jsdoc">module swagger-jsdoc</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.swagger-jsdoc.swagger-jsdoc">
+            function <span class="apidocSignatureSpan"></span>swagger-jsdoc
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">swagger-jsdoc.</span>swagger_helpers</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.swagger-jsdoc.swagger_helpers">module swagger-jsdoc.swagger_helpers</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.swagger-jsdoc.swagger_helpers.addDataToSwaggerObject">
+            function <span class="apidocSignatureSpan">swagger-jsdoc.swagger_helpers.</span>addDataToSwaggerObject
+            <span class="apidocSignatureSpan">(swaggerObject, data)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.swagger-jsdoc.swagger_helpers.findDeprecated">
+            function <span class="apidocSignatureSpan">swagger-jsdoc.swagger_helpers.</span>findDeprecated
+            <span class="apidocSignatureSpan">(sources)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.swagger-jsdoc.swagger_helpers.swaggerizeObj">
+            function <span class="apidocSignatureSpan">swagger-jsdoc.swagger_helpers.</span>swaggerizeObj
+            <span class="apidocSignatureSpan">(swaggerObject)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.swagger-jsdoc" id="apidoc.module.swagger-jsdoc">module swagger-jsdoc</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.swagger-jsdoc.swagger-jsdoc" id="apidoc.element.swagger-jsdoc.swagger-jsdoc">
+        function <span class="apidocSignatureSpan"></span>swagger-jsdoc
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">swagger-jsdoc = function (options) {
+<span class="apidocCodeCommentSpan">  /* istanbul ignore if */
+</span>  if (!options) {
+    throw new Error(&#x27;\&#x27;options\&#x27; is required.&#x27;);
+  } else /* istanbul ignore if */ if (!options.swaggerDefinition) {
+    throw new Error(&#x27;\&#x27;swaggerDefinition\&#x27; is required.&#x27;);
+  } else /* istanbul ignore if */ if (!options.apis) {
+    throw new Error(&#x27;\&#x27;apis\&#x27; is required.&#x27;);
+  }
+
+  // Build basic swagger json
+  var swaggerObject = swaggerHelpers.swaggerizeObj(options.swaggerDefinition);
+  var apiPaths = convertGlobPaths(options.apis);
+
+  // Parse the documentation in the APIs array.
+  for (var i = 0; i &#x3c; apiPaths.length; i = i + 1) {
+    var files = parseApiFile(apiPaths[i]);
+    var swaggerJsDocComments = filterJsDocComments(files.jsdoc);
+
+    var problems = swaggerHelpers.findDeprecated([files, swaggerJsDocComments]);
+    // Report a warning in case potential problems encountered.
+    if (problems.length &#x3e; 0) {
+      console.warn(&#x27;You are using properties to be deprecated in v2.0.0&#x27;);
+      console.warn(&#x27;Please update to align with the swagger v2.0 spec.&#x27;);
+      console.warn(problems);
+    }
+
+    swaggerHelpers.addDataToSwaggerObject(swaggerObject, files.yaml);
+    swaggerHelpers.addDataToSwaggerObject(swaggerObject, swaggerJsDocComments);
+  }
+
+  parser.parse(swaggerObject, function(err, api) {
+    if (!err) {
+      swaggerObject = api;
+    }
+  });
+
+  return swaggerObject;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.swagger-jsdoc.swagger_helpers" id="apidoc.module.swagger-jsdoc.swagger_helpers">module swagger-jsdoc.swagger_helpers</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.swagger-jsdoc.swagger_helpers.addDataToSwaggerObject" id="apidoc.element.swagger-jsdoc.swagger_helpers.addDataToSwaggerObject">
+        function <span class="apidocSignatureSpan">swagger-jsdoc.swagger_helpers.</span>addDataToSwaggerObject
+        <span class="apidocSignatureSpan">(swaggerObject, data)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function addDataToSwaggerObject(swaggerObject, data) {
+  if (!swaggerObject || !data) {
+    throw new Error(&#x27;swaggerObject and data are required!&#x27;);
+  }
+
+  for (var i = 0; i &#x3c; data.length; i = i + 1) {
+    var pathObject = data[i];
+    var propertyNames = Object.getOwnPropertyNames(pathObject);
+    // Iterating the properties of the a given pathObject.
+    for (var j = 0; j &#x3c; propertyNames.length; j = j + 1) {
+      var propertyName = propertyNames[j];
+      // Do what&#x27;s necessary to organize the end specification.
+      _organizeSwaggerProperties(swaggerObject, pathObject, propertyName);
+    }
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.swagger-jsdoc.swagger_helpers.findDeprecated" id="apidoc.element.swagger-jsdoc.swagger_helpers.findDeprecated">
+        function <span class="apidocSignatureSpan">swagger-jsdoc.swagger_helpers.</span>findDeprecated
+        <span class="apidocSignatureSpan">(sources)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function findDeprecated(sources) {
+  var wrong = _getSwaggerSchemaWrongProperties();
+  // accumulate problems encountered
+  var problems = [];
+  sources.forEach(function(source) {
+    // Iterate through `source`, search for `wrong`, accumulate in `problems`.
+    seekWrong(source, wrong, problems);
+  });
+  return problems;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.swagger-jsdoc.swagger_helpers.swaggerizeObj" id="apidoc.element.swagger-jsdoc.swagger_helpers.swaggerizeObj">
+        function <span class="apidocSignatureSpan">swagger-jsdoc.swagger_helpers.</span>swaggerizeObj
+        <span class="apidocSignatureSpan">(swaggerObject)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function swaggerizeObj(swaggerObject) {
+  swaggerObject.swagger = &#x27;2.0&#x27;;
+  swaggerObject.paths = swaggerObject.paths || {};
+  swaggerObject.definitions = swaggerObject.definitions || {};
+  swaggerObject.responses = swaggerObject.responses || {};
+  swaggerObject.parameters = swaggerObject.parameters || {};
+  swaggerObject.securityDefinitions = swaggerObject.securityDefinitions || {};
+  swaggerObject.tags = swaggerObject.tags || [];
+  return swaggerObject;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
